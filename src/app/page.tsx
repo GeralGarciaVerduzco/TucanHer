@@ -2,7 +2,7 @@
 
 import {useCallback,useEffect,useRef,useState} from 'react';
 import Link from 'next/link';
-import {ArrowRight,ChartNoAxesCombined,MapPin,ShoppingBasket,Users} from 'lucide-react';
+import {ArrowRight,Bell,ChartNoAxesCombined,Gift,MapPin,ShoppingBasket,Users} from 'lucide-react';
 import {useApp} from '@/context/app-context';
 import {money,products,stores} from '@/data/demo';
 import {Mascot} from '@/components/mascot';
@@ -32,6 +32,7 @@ export default function Home(){
     {location&&<GoogleMap coordinates={location}/>}
     <div className="stats-grid"><Link className="panel stat" href="/canasta"><ShoppingBasket className="accent"/><div><small>Productos básicos</small><strong>{items.length}</strong><span>en tu canasta</span></div></Link><Link className="panel stat" href="/comunidad"><Users className="accent"/><div><small>Aportes en tu zona</small><strong>{localReports}</strong><span>{localReports?'reportes en este navegador':'sé la primera persona en aportar'}</span></div></Link></div>
     <SectionHeader title="Mejor precio disponible" href="/comparar" action="Ver comparación"/><Link href="/comparar" className="panel home-best"><span className="store-icon"><ChartNoAxesCombined size={23}/></span><div><strong>{best?.name??'Elige productos básicos'}</strong><small>Menor total estimado para tu canasta · precio de muestra</small></div><b>{best?money(best.total):'—'}</b></Link>
+    <div className="home-next-steps"><Link href="/actividad" className="panel home-next-step"><Bell size={19}/><span><strong>Seguir precios</strong><small>Alertas e historial en Actividad</small></span></Link><Link href="/recompensas" className="panel home-next-step"><Gift size={19}/><span><strong>Ver beneficios</strong><small>Cupones locales y puntos</small></span></Link></div>
     <Panel className="community-invite"><div><span className="eyebrow">PRECIOS DE LA COMUNIDAD</span><h2>¿Viste otro precio en tu tienda?</h2><p>Compártelo para que otras familias de {region} puedan comparar.</p></div><Link href="/comunidad" className="outline-button">Aportar precio <ArrowRight size={17}/></Link></Panel>
     <Panel className="data-note"><MapPin size={18}/><p>Esta versión usa precios de muestra. Los aportes se reflejan al instante en tu navegador; compartirlos en tiempo real con toda la comunidad requiere conectar un servicio común.</p></Panel>
   </div>;

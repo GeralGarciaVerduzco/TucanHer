@@ -2,10 +2,12 @@
 import {createContext,useCallback,useContext,useEffect,useState,type ReactNode} from 'react';
 import {products,stores} from '@/data/demo';
 
-export type PriceReport={id:string;storeId:string;productId:string;price:number;region:string;createdAt:string};
+export type ReceiptItemMetadata={productId:string;productName:string;quantity:number;unitPrice:number};
+export type PriceReport={id:string;storeId:string;productId:string;price:number;region:string;createdAt:string;branchName?:string;receiptFileName?:string;receiptTotal?:number;purchaseDate?:string;quantity?:number;receiptItems?:ReceiptItemMetadata[]};
+export type ReceiptMetadata={branch:string;fileName:string;purchaseDate:string;quantity:number;items:ReceiptItemMetadata[]};
 export type DeviceLocation={latitude:number;longitude:number;accuracy:number};
 type State={basket:string[];region:string;priceReports:PriceReport[]};
-type AppContextValue=State&{location:DeviceLocation|null;setLocation:(location:DeviceLocation|null)=>void;notice:string;dismiss:()=>void;toggleBasket:(id:string)=>void;setRegion:(region:string)=>void;addPriceReport:(storeId:string,productId:string,price:number)=>void};
+type AppContextValue=State&{location:DeviceLocation|null;setLocation:(location:DeviceLocation|null)=>void;notice:string;dismiss:()=>void;toggleBasket:(id:string)=>void;setRegion:(region:string)=>void;addPriceReport:(storeId:string,productId:string,price:number,receipt?:ReceiptMetadata)=>void};
 const initial:State={basket:products.map(product=>product.id),region:'',priceReports:[]};
 const Context=createContext<AppContextValue|null>(null);
 
@@ -15,9 +17,9 @@ export function AppProvider({children}:{children:ReactNode}){
   useEffect(()=>{if(ready)window.localStorage.setItem('canasta-comunidad-v2',JSON.stringify(state));},[state,ready]);
   const toggleBasket=useCallback((id:string)=>setState(current=>({...current,basket:current.basket.includes(id)?current.basket.filter(item=>item!==id):[...current.basket,id]})),[]);
   const setRegion=useCallback((region:string)=>setState(current=>({...current,region})),[]);
-  const addPriceReport=useCallback((storeId:string,productId:string,price:number)=>{
+  const addPriceReport=useCallback((storeId:string,productId:string,price:number,receipt?:ReceiptMetadata)=>{
     if(!Number.isFinite(price)||price<=0)return;
-    setState(current=>({ ...current,priceReports:[{id:crypto.randomUUID(),storeId,productId,price,region:current.region,createdAt:new Date().toISOString()},...current.priceReports]}));
+    setState(current=>({ ...current,priceReports:[{id:crypto.randomUUID(),storeId,productId,price,region:current.region,createdAt:new Date().toISOString(),...(receipt?{branchName:receipt.branch,receiptFileName:receipt.fileName,purchaseDate:receipt.purchaseDate,quantity:receipt.quantity,receiptItems:receipt.items}:{})},...current.priceReports]}));
     const product=products.find(item=>item.id===productId);const store=stores.find(item=>item.id===storeId);
     setNotice(`Precio de ${product?.name??'producto'} compartido para ${store?.name??'la tienda'}.`);
   },[]);
